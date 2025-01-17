@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Use the port from the environment or default to 8501
+#port = int(os.getenv('PORT', 8501))
+
 # App title
 st.title("Interactive Sankey Diagram Creator")
 

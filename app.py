@@ -2,8 +2,20 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Inject custom CSS to set the background to white
+st.markdown("""
+    <style>
+        body {
+            background-color: white;
+        }
+        .block-container {
+            background-color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # App title
-st.title("Interactive Sankey Diagram Creator with White Plot Background")
+st.title("Interactive Sankey Diagram Creator with Color Customization")
 
 # Instructions
 st.write("Enter your source, target, value, and color data below to generate a Sankey diagram.")
@@ -56,4 +68,23 @@ if not data.empty:
     node_indices = {label: index for index, label in enumerate(all_labels)}
 
     # Generate Sankey diagram
-    fig = go.Fig
+    fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=all_labels,
+            color=[node_colors[all_labels.index(node)] if node in sources else "gray" for node in all_labels],
+        ),
+        link=dict(
+            source=[node_indices[src] for src in sources],
+            target=[node_indices[tgt] for tgt in targets],
+            value=values,
+            color=link_colors,  # Use the custom link colors
+        ),
+    )])
+
+    # Display the Sankey diagram
+    st.plotly_chart(fig)
+else:
+    st.warning("Please enter valid data to generate the Sankey diagram.")

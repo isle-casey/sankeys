@@ -2,20 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# Inject custom CSS to set the background to white
-st.markdown("""
-    <style>
-        body {
-            background-color: white;
-        }
-        .block-container {
-            background-color: white;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # App title
-st.title("Interactive Sankey Diagram Creator with Color Customization")
+st.title("Interactive Sankey Diagram Creator with White Plot Background")
 
 # Instructions
 st.write("Enter your source, target, value, and color data below to generate a Sankey diagram.")
@@ -83,6 +71,17 @@ if not data.empty:
             color=link_colors,  # Use the custom link colors
         ),
     )])
+
+    # Update layout to set plot and paper background to white
+    fig.update_layout(
+        plot_bgcolor='white',  # Set the plot area background to white
+        paper_bgcolor='white',  # Set the entire figure background to white
+        title_text="Sankey Diagram",
+        font=dict(family="Calibri", size=14),
+        width=800,
+        height=600,
+        margin=dict(l=50, r=50, t=100, b=50)
+    )
 
     # Display the Sankey diagram
     st.plotly_chart(fig)

@@ -2,20 +2,49 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Inject custom CSS to set the background to white
+st.markdown("""
+    <style>
+        body {
+            background-color: white;
+        }
+        .block-container {
+            background-color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # App title
-st.title("Interactive Sankey Diagram Creator with Colors")
+st.title("Interactive Sankey Diagram Creator with Color Customization")
 
 # Instructions
-st.write("Enter your source, target, value, and optional color data below to generate a Sankey diagram.")
+st.write("Enter your source, target, value, and color data below to generate a Sankey diagram.")
 
-# Default data for the table
+# Default data for the table with more examples
 default_data = {
-    "Source": ["A", "B", "A"],
-    "Target": ["B", "C", "D"],
-    "Value": [10, 5, 15],
-    "Node Color": ["rgb(0, 150, 150)", "rgb(190, 200, 0)", "rgb(240, 150, 0)"],  # Node colors
-    "Link Color": ["rgba(0, 150, 150, 0.6)", "rgba(190, 200, 0, 0.6)", "rgba(240, 150, 0, 0.6)"],  # Link colors
+    "Source": ["A", "B", "A", "C", "D", "E", "F", "G"],
+    "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
+    "Value": [10, 15, 20, 25, 30, 35, 40, 45],
+    "Node Color": [
+        "rgb(0, 150, 150)",  # Teal
+        "rgb(190, 200, 0)",  # Olive
+        "rgb(240, 150, 0)",  # Orange
+        "rgb(90, 80, 150)",  # Purple
+        "rgb(200, 200, 0)",  # Yellow
+        "rgb(50, 150, 200)",  # Light Blue
+        "rgb(100, 100, 255)",  # Blue
+        "rgb(180, 100, 150)"   # Pink
+    ],
+    "Link Color": [
+        "rgba(0, 150, 150, 0.6)",  # Teal link
+        "rgba(190, 200, 0, 0.6)",  # Olive link
+        "rgba(240, 150, 0, 0.6)",  # Orange link
+        "rgba(90, 80, 150, 0.6)",  # Purple link
+        "rgba(200, 200, 0, 0.6)",  # Yellow link
+        "rgba(50, 150, 200, 0.6)",  # Light Blue link
+        "rgba(100, 100, 255, 0.6)",  # Blue link
+        "rgba(180, 100, 150, 0.6)"   # Pink link
+    ],
 }
 
 # Create or edit a table

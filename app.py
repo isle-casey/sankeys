@@ -56,33 +56,4 @@ if not data.empty:
     node_indices = {label: index for index, label in enumerate(all_labels)}
 
     # Generate Sankey diagram
-    fig = go.Figure(data=[go.Sankey(
-        node=dict(
-            pad=15,
-            thickness=20,
-            line=dict(color="black", width=0.5),
-            label=all_labels,
-            color=[node_colors[all_labels.index(node)] if node in sources else "gray" for node in all_labels],
-        ),
-        link=dict(
-            source=[node_indices[src] for src in sources],
-            target=[node_indices[tgt] for tgt in targets],
-            value=values,
-            color=link_colors,  # Use the custom link colors
-        ),
-    )])
-
-    # Update layout to set plot background to white
-    fig.update_layout(
-        plot_bgcolor='white',  # Set the plot background to white
-        title_text="Sankey Diagram",
-        font=dict(family="Calibri", size=14),
-        width=800,
-        height=600,
-        margin=dict(l=50, r=50, t=100, b=50)
-    )
-
-    # Display the Sankey diagram
-    st.plotly_chart(fig)
-else:
-    st.warning("Please enter valid data to generate the Sankey diagram.")
+    fig = go.Fig

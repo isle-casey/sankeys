@@ -169,7 +169,14 @@ if not data.empty and not settings_table.empty:
         font=dict(family=font_family, size=font_size, color="black"),  # Set font for title and labels
         width=figure_width,
         height=figure_height,
-        margin=dict(l=50, r=50, t=100, b=50)
+        margin=dict(l=50, r=50, t=100, b=50),
+    )
+
+    # Explicitly set font color for the node labels to black
+    fig.update_traces(
+        node=dict(
+            font=dict(color="black")  # Set the node label font color to black
+        )
     )
 
     # Display the Sankey diagram

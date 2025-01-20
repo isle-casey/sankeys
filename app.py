@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import random
-
-# Function to generate random color
-def random_color():
-    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 # Custom colors
+default_target_color = "#808080"  # Default grey color for source nodes without a specified color
 custom_colors = {
+    "Lime": "#BEC800",
+    "Teal": "#009696",
+    "Orange": "#F09600",
+    "Lilac": "#5A5096",
     "Teal_Transparent": "rgba(0, 150, 150, 0.6)",
     "Lime_Transparent": "rgba(190, 200, 0, 0.6)",
     "Orange_Transparent": "rgba(240, 150, 0, 0.6)",
@@ -16,10 +16,10 @@ custom_colors = {
 }
 
 # App title
-st.title("Interactive Sankey Diagram Creator with Random Default Colors")
+st.title("Interactive Sankey Diagram Creator with Default Grey Colors")
 
 # Instructions
-st.write("Enter your source, target, value, and target node color data below to generate a Sankey diagram.")
+st.write("Enter your source, target, value, and target node color data below. Missing colors will default to grey.")
 
 # Default data for the table
 default_data = {
@@ -27,10 +27,24 @@ default_data = {
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
     "Target Node Color": [
-        random_color() for _ in range(8)  # Assign random colors
+        "Teal",        # Custom Teal
+        "Lime",        # Custom Lime
+        "Orange",      # Custom Orange
+        "Lilac",       # Custom Lilac
+        "Lime",        # Custom Lime
+        "Teal",        # Custom Teal
+        "Lilac",       # Custom Lilac
+        "",            # Missing color, should default to grey
     ],
     "Link Color": [
-        random_color() for _ in range(8)  # Assign random colors
+        "Teal_Transparent",  # Custom Transparent Teal
+        "Lime_Transparent",  # Custom Transparent Lime
+        "Orange_Transparent", # Custom Transparent Orange
+        "Lilac_Transparent",  # Custom Transparent Lilac
+        "Lime_Transparent",  # Custom Transparent Lime
+        "Teal_Transparent",  # Custom Transparent Teal
+        "Lilac_Transparent",  # Custom Transparent Lilac
+        "",                  # Missing color, should default to grey
     ],
 }
 
@@ -41,11 +55,9 @@ data = st.data_editor(
     num_rows="dynamic"  # Allows adding new rows
 )
 
-# Automatically assign random colors to new rows
-if len(data) > len(default_data["Source"]):  # If rows have been added
-    for i in range(len(default_data["Source"]), len(data)):
-        data.at[i, "Target Node Color"] = random_color()
-        data.at[i, "Link Color"] = random_color()
+# Replace missing colors with default grey
+data["Target Node Color"] = data["Target Node Color"].replace("", default_target_color)
+data["Link Color"] = data["Link Color"].replace("", default_target_color)
 
 # Ensure data is valid
 if not data.empty:
@@ -53,8 +65,12 @@ if not data.empty:
     sources = data["Source"].astype(str).tolist()
     targets = data["Target"].astype(str).tolist()
     values = data["Value"].astype(int).tolist()
-    target_colors = data["Target Node Color"].astype(str).tolist()
-    link_colors = data["Link Color"].astype(str).tolist()
+    target_colors = data["Target Node Color"].apply(
+        lambda x: custom_colors.get(x, x)  # Use custom color or the given value
+    ).tolist()
+    link_colors = data["Link Color"].apply(
+        lambda x: custom_colors.get(x, x)  # Use custom color or the given value
+    ).tolist()
 
     # Combine unique labels
     all_labels = list(set(sources + targets))
@@ -65,7 +81,7 @@ if not data.empty:
 
     # Assign colors to nodes
     node_colors = [
-        node_color_map.get(node, random_color())  # Assign random color if missing
+        node_color_map.get(node, default_target_color)  # Default source node color is grey
         for node in all_labels
     ]
 

@@ -147,7 +147,6 @@ if not data.empty and not settings_table.empty:
             line=dict(color="black", width=0.5),
             label=sankey_labels,
             color=node_colors,  # Use the computed node colors
-            font=dict(color="black")  # Set label font color to black
         ),
         link=dict(
             source=[node_indices[src] for src in sources],
@@ -162,7 +161,7 @@ if not data.empty and not settings_table.empty:
         plot_bgcolor='white',
         paper_bgcolor='white',
         title_text="Sankey Diagram",
-        font=dict(family=font_family, size=font_size, color="black"),  # Set font color to black
+        font=dict(family=font_family, size=font_size, color="black"),  # Set font for title and labels
         width=figure_width,
         height=figure_height,
         margin=dict(l=50, r=50, t=100, b=50)

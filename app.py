@@ -125,9 +125,14 @@ if not data.empty and not settings_table.empty:
     sankey_labels = []
     for label in all_labels:
         if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
-            sankey_labels.append(
-                f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}"
-            )
+            if source_totals[label] == target_totals[label]:  # If "in" and "out" are equal, show only one
+                sankey_labels.append(
+                    f"{label}<br>{format_value(source_totals[label])} {units[0]}"
+                )
+            else:
+                sankey_labels.append(
+                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}"
+                )
         elif label in source_totals:  # Source node with outgoing flow total
             sankey_labels.append(
                 f"{label}<br>{format_value(source_totals[label])} {units[0]}"

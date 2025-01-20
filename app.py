@@ -48,7 +48,7 @@ default_settings = {
 }
 
 # App title
-st.title("Interactive Sankey Diagram Creator with Aggregated Target Node Totals")
+st.title("Interactive Sankey Diagram Creator with Aggregated Node Totals")
 
 # Instructions
 st.write("Edit the tables below to customize the Sankey diagram and its formatting.")
@@ -102,13 +102,15 @@ if not data.empty and not settings_table.empty:
     all_labels = list(set(sources + targets))
     node_indices = {label: index for index, label in enumerate(all_labels)}
 
-    # Aggregate total values for each target node
+    # Aggregate total values for each source and target node
+    source_totals = {}
     target_totals = {}
+
+    for source, value in zip(sources, values):
+        source_totals[source] = source_totals.get(source, 0) + value
+
     for target, value in zip(targets, values):
-        if target in target_totals:
-            target_totals[target] += value
-        else:
-            target_totals[target] = value
+        target_totals[target] = target_totals.get(target, 0) + value
 
     # Create a mapping for target node colors
     node_color_map = {target: custom_colors.get(color, "gray") for target, color in zip(targets, target_colors)}
@@ -119,16 +121,22 @@ if not data.empty and not settings_table.empty:
         for node in all_labels
     ]
 
-    # Generate Sankey labels with aggregated values for target nodes
+    # Generate Sankey labels with totals for source and target nodes
     sankey_labels = []
     for label in all_labels:
-        if label in target_totals:  # Target node with aggregated value
+        if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
             sankey_labels.append(
-                f"{label}<br>{format_value(target_totals[label])} {units[0]}"  # Use first unit by default
+                f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}"
             )
-        elif label in sources:  # Source node
-            sankey_labels.append(label)
-        else:  # Standalone node without links
+        elif label in source_totals:  # Source node with outgoing flow total
+            sankey_labels.append(
+                f"{label}<br>{format_value(source_totals[label])} {units[0]}"
+            )
+        elif label in target_totals:  # Target node with incoming flow total
+            sankey_labels.append(
+                f"{label}<br>{format_value(target_totals[label])} {units[0]}"
+            )
+        else:  # Standalone node
             sankey_labels.append(label)
 
     # Generate the Sankey diagram
@@ -139,6 +147,7 @@ if not data.empty and not settings_table.empty:
             line=dict(color="black", width=0.5),
             label=sankey_labels,
             color=node_colors,  # Use the computed node colors
+            font=dict(color="black")  # Set label font color to black
         ),
         link=dict(
             source=[node_indices[src] for src in sources],

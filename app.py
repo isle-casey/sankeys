@@ -152,7 +152,6 @@ if not data.empty and not settings_table.empty:
             line=dict(color="black", width=0.5),
             label=sankey_labels,
             color=node_colors,  # Use the computed node colors
-            font=dict(size=font_size, color="black", family=font_family, weight="bold"),  # Make the font bold
         ),
         link=dict(
             source=[node_indices[src] for src in sources],

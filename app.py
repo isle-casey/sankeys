@@ -2,36 +2,48 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Custom color definitions
+custom_colors = {
+    "Lime": "#BEC800",
+    "Teal": "#009696",
+    "Orange": "#F09600",
+    "Lilac": "#5A5096",
+    "Teal_Transparent": "rgba(0, 150, 150, 0.6)",
+    "Lime_Transparent": "rgba(190, 200, 0, 0.6)",
+    "Orange_Transparent": "rgba(240, 150, 0, 0.6)",
+    "Lilac_Transparent": "rgba(90, 80, 150, 0.6)",
+}
+
 # App title
 st.title("Interactive Sankey Diagram Creator with White Plot Background")
 
 # Instructions
 st.write("Enter your source, target, value, and color data below to generate a Sankey diagram.")
 
-# Default data for the table with more examples
+# Default data for the table using custom names
 default_data = {
     "Source": ["A", "B", "A", "C", "D", "E", "F", "G"],
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
     "Node Color": [
-        "rgb(0, 150, 150)",  # Teal
-        "rgb(190, 200, 0)",  # Olive
-        "rgb(240, 150, 0)",  # Orange
-        "rgb(90, 80, 150)",  # Purple
-        "rgb(200, 200, 0)",  # Yellow
-        "rgb(50, 150, 200)",  # Light Blue
-        "rgb(100, 100, 255)",  # Blue
-        "rgb(180, 100, 150)"   # Pink
+        "Teal",        # Custom Teal
+        "Lime",        # Custom Lime
+        "Orange",      # Custom Orange
+        "Lilac",       # Custom Lilac
+        "Lime",        # Custom Lime
+        "Teal",        # Custom Teal
+        "Lilac",       # Custom Lilac
+        "Orange"       # Custom Orange
     ],
     "Link Color": [
-        "rgba(0, 150, 150, 0.6)",  # Teal link
-        "rgba(190, 200, 0, 0.6)",  # Olive link
-        "rgba(240, 150, 0, 0.6)",  # Orange link
-        "rgba(90, 80, 150, 0.6)",  # Purple link
-        "rgba(200, 200, 0, 0.6)",  # Yellow link
-        "rgba(50, 150, 200, 0.6)",  # Light Blue link
-        "rgba(100, 100, 255, 0.6)",  # Blue link
-        "rgba(180, 100, 150, 0.6)"   # Pink link
+        "Teal_Transparent",  # Custom Transparent Teal
+        "Lime_Transparent",  # Custom Transparent Lime
+        "Orange_Transparent", # Custom Transparent Orange
+        "Lilac_Transparent",  # Custom Transparent Lilac
+        "Lime_Transparent",  # Custom Transparent Lime
+        "Teal_Transparent",  # Custom Transparent Teal
+        "Lilac_Transparent",  # Custom Transparent Lilac
+        "Orange_Transparent"  # Custom Transparent Orange
     ],
 }
 
@@ -48,8 +60,8 @@ if not data.empty:
     sources = data["Source"].astype(str).tolist()
     targets = data["Target"].astype(str).tolist()
     values = data["Value"].astype(int).tolist()
-    node_colors = data["Node Color"].astype(str).tolist()
-    link_colors = data["Link Color"].astype(str).tolist()
+    node_colors = [custom_colors[color] for color in data["Node Color"].astype(str).tolist()]
+    link_colors = [custom_colors[color] for color in data["Link Color"].astype(str).tolist()]
 
     # Combine unique labels
     all_labels = list(set(sources + targets))

@@ -170,13 +170,8 @@ if not data.empty and not settings_table.empty:
         width=figure_width,
         height=figure_height,
         margin=dict(l=50, r=50, t=100, b=50),
-    )
-
-    # Explicitly set font color for the node labels to black
-    fig.update_traces(
-        node=dict(
-            font=dict(color="black")  # Set the node label font color to black
-        )
+        xaxis=dict(showgrid=False, zeroline=False),  # Hide grid lines on x-axis
+        yaxis=dict(showgrid=False, zeroline=False),  # Hide grid lines on y-axis
     )
 
     # Display the Sankey diagram

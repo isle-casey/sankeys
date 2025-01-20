@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# Custom color definitions
+# Custom colors
+default_target_color = "teal"  # Default color for source nodes without a color
 custom_colors = {
     "Lime": "#BEC800",
     "Teal": "#009696",
@@ -15,17 +16,17 @@ custom_colors = {
 }
 
 # App title
-st.title("Interactive Sankey Diagram Creator with White Plot Background")
+st.title("Interactive Sankey Diagram Creator with Default Source Colors")
 
 # Instructions
-st.write("Enter your source, target, value, and color data below to generate a Sankey diagram.")
+st.write("Enter your source, target, value, and target node color data below to generate a Sankey diagram.")
 
-# Default data for the table using custom names
+# Default data for the table
 default_data = {
     "Source": ["A", "B", "A", "C", "D", "E", "F", "G"],
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
-    "Node Color": [
+    "Target Node Color": [
         "Teal",        # Custom Teal
         "Lime",        # Custom Lime
         "Orange",      # Custom Orange
@@ -60,12 +61,21 @@ if not data.empty:
     sources = data["Source"].astype(str).tolist()
     targets = data["Target"].astype(str).tolist()
     values = data["Value"].astype(int).tolist()
-    node_colors = [custom_colors[color] for color in data["Node Color"].astype(str).tolist()]
+    target_colors = data["Target Node Color"].astype(str).tolist()
     link_colors = [custom_colors[color] for color in data["Link Color"].astype(str).tolist()]
 
     # Combine unique labels
     all_labels = list(set(sources + targets))
     node_indices = {label: index for index, label in enumerate(all_labels)}
+
+    # Create a mapping for node colors
+    node_color_map = {target: custom_colors.get(color, default_target_color) for target, color in zip(targets, target_colors)}
+
+    # Assign colors to nodes
+    node_colors = [
+        node_color_map.get(node, default_target_color)  # Default source node color is teal
+        for node in all_labels
+    ]
 
     # Generate Sankey diagram
     fig = go.Figure(data=[go.Sankey(
@@ -74,7 +84,7 @@ if not data.empty:
             thickness=20,
             line=dict(color="black", width=0.5),
             label=all_labels,
-            color=[node_colors[all_labels.index(node)] if node in sources else "gray" for node in all_labels],
+            color=node_colors,  # Use the computed node colors
         ),
         link=dict(
             source=[node_indices[src] for src in sources],

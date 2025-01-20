@@ -48,7 +48,7 @@ default_settings = {
 }
 
 # App title
-st.title("Interactive Sankey Diagram Creator with Customizable Formatting")
+st.title("Interactive Sankey Diagram Creator with Aggregated Target Node Totals")
 
 # Instructions
 st.write("Edit the tables below to customize the Sankey diagram and its formatting.")
@@ -102,6 +102,14 @@ if not data.empty and not settings_table.empty:
     all_labels = list(set(sources + targets))
     node_indices = {label: index for index, label in enumerate(all_labels)}
 
+    # Aggregate total values for each target node
+    target_totals = {}
+    for target, value in zip(targets, values):
+        if target in target_totals:
+            target_totals[target] += value
+        else:
+            target_totals[target] = value
+
     # Create a mapping for target node colors
     node_color_map = {target: custom_colors.get(color, "gray") for target, color in zip(targets, target_colors)}
 
@@ -111,11 +119,17 @@ if not data.empty and not settings_table.empty:
         for node in all_labels
     ]
 
-    # Generate Sankey labels with values and units
-    sankey_labels = [
-        f"{label}<br>{format_value(values[sources.index(label)])} {units[sources.index(label)]}" if label in sources else label
-        for label in all_labels
-    ]
+    # Generate Sankey labels with aggregated values for target nodes
+    sankey_labels = []
+    for label in all_labels:
+        if label in target_totals:  # Target node with aggregated value
+            sankey_labels.append(
+                f"{label}<br>{format_value(target_totals[label])} {units[0]}"  # Use first unit by default
+            )
+        elif label in sources:  # Source node
+            sankey_labels.append(label)
+        else:  # Standalone node without links
+            sankey_labels.append(label)
 
     # Generate the Sankey diagram
     fig = go.Figure(data=[go.Sankey(

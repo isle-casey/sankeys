@@ -161,8 +161,9 @@ if not data.empty and not settings_table.empty:
         ),
     )])
 
-    # Update layout with customizable formatting
+    # Set the default template to "plotly_white"
     fig.update_layout(
+        template="plotly_white",  # Apply the plotly_white template
         plot_bgcolor='white',
         paper_bgcolor='white',
         title_text="Sankey Diagram",

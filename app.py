@@ -93,6 +93,11 @@ if not data.empty and not settings_table.empty:
     thousands_separator = settings["thousands_separator"]
     font_family = settings["font_family"]
 
+    # Format values using the specified separators
+    def format_value(value):
+        formatted = f"{value:,.0f}".replace(",", "TEMP").replace(".", decimal_separator).replace("TEMP", thousands_separator)
+        return formatted
+
     # Combine unique labels and create a mapping for indices
     all_labels = list(set(sources + targets))
     node_indices = {label: index for index, label in enumerate(all_labels)}
@@ -108,7 +113,7 @@ if not data.empty and not settings_table.empty:
 
     # Generate Sankey labels with values and units
     sankey_labels = [
-        f"{label} ({values[sources.index(label)]} {units[sources.index(label)]})" if label in sources else label
+        f"{label}<br>{format_value(values[sources.index(label)])} {units[sources.index(label)]}" if label in sources else label
         for label in all_labels
     ]
 
@@ -134,7 +139,7 @@ if not data.empty and not settings_table.empty:
         plot_bgcolor='white',
         paper_bgcolor='white',
         title_text="Sankey Diagram",
-        font=dict(family=font_family, size=font_size),
+        font=dict(family=font_family, size=font_size, color="black"),  # Set font color to black
         width=figure_width,
         height=figure_height,
         margin=dict(l=50, r=50, t=100, b=50)

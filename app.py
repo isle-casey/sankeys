@@ -83,7 +83,6 @@ if not data.empty and not settings_table.empty:
     percentages = data["Percentage"].astype(int).tolist()
     units = data["Unit"].astype(str).tolist()
     target_colors = data["Target Node Color"].astype(str).tolist()
-    link_colors = [custom_colors[color] for color in data["Link Color"].astype(str).tolist()]
 
     # Extract settings
     settings = settings_table.set_index("Setting")["Value"]
@@ -102,6 +101,14 @@ if not data.empty and not settings_table.empty:
     def format_value(value):
         formatted = f"{value:,.0f}".replace(",", "TEMP").replace(".", decimal_separator).replace("TEMP", thousands_separator)
         return formatted
+
+    # Dynamically adjust link transparency
+    link_colors = [
+        custom_colors[color].replace("0.3", f"{transparency}")  # Replace the hardcoded transparency
+        if "rgba" in custom_colors[color]
+        else custom_colors[color]  # Keep solid colors unchanged
+        for color in data["Link Color"].astype(str).tolist()
+    ]
 
     # Combine unique labels and create a mapping for indices
     all_labels = list(set(sources + targets))
@@ -167,7 +174,7 @@ if not data.empty and not settings_table.empty:
             source=[node_indices[src] for src in sources],
             target=[node_indices[tgt] for tgt in targets],
             value=values,
-            color=link_colors,  # Use the custom link colors
+            color=link_colors,  # Use the dynamically computed link colors
         ),
     )])
 

@@ -19,8 +19,8 @@ default_data = {
     "Source": ["A", "B", "A", "C", "D", "E", "F", "G"],
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
+    "Percentage": [10] * 8,  # Default percentage values as raw numbers
     "Unit": ["m3/y"] * 8,  # Default units for values
-    "Percentage": ["10%"] * 8,  # Default percentage for values
     "Target Node Color": [
         "Teal", "Lime", "Orange", "Lilac", "Lime", "Teal", "Lilac", "Orange"
     ],
@@ -77,8 +77,8 @@ if not data.empty and not settings_table.empty:
     sources = data["Source"].astype(str).tolist()
     targets = data["Target"].astype(str).tolist()
     values = data["Value"].astype(int).tolist()
+    percentages = data["Percentage"].astype(int).tolist()
     units = data["Unit"].astype(str).tolist()
-    percentages = data["Percentage"].astype(str).tolist()
     target_colors = data["Target Node Color"].astype(str).tolist()
     link_colors = [custom_colors[color] for color in data["Link Color"].astype(str).tolist()]
 
@@ -104,15 +104,19 @@ if not data.empty and not settings_table.empty:
     all_labels = list(set(sources + targets))
     node_indices = {label: index for index, label in enumerate(all_labels)}
 
-    # Aggregate total values for each source and target node
+    # Aggregate total values and percentages for each source and target node
     source_totals = {}
+    source_percentages = {}
     target_totals = {}
+    target_percentages = {}
 
-    for source, value in zip(sources, values):
+    for source, value, percentage in zip(sources, values, percentages):
         source_totals[source] = source_totals.get(source, 0) + value
+        source_percentages[source] = source_percentages.get(source, 0) + percentage
 
-    for target, value in zip(targets, values):
+    for target, value, percentage in zip(targets, values, percentages):
         target_totals[target] = target_totals.get(target, 0) + value
+        target_percentages[target] = target_percentages.get(target, 0) + percentage
 
     # Create a mapping for target node colors
     node_color_map = {target: custom_colors.get(color, "gray") for target, color in zip(targets, target_colors)}
@@ -123,28 +127,29 @@ if not data.empty and not settings_table.empty:
         for node in all_labels
     ]
 
-    # Generate Sankey labels with totals for source and target nodes
+    # Generate Sankey labels with totals, percentages, and units
     sankey_labels = []
     for label in all_labels:
+        total_percentage = target_percentages.get(label, 0) + source_percentages.get(label, 0)
         if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
             if source_totals[label] == target_totals[label]:  # If "in" and "out" are equal, show only one
                 sankey_labels.append(
-                    f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
+                    f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{total_percentage}%"
                 )
             else:
                 sankey_labels.append(
-                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
+                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}<br>{total_percentage}%"
                 )
         elif label in source_totals:  # Source node with outgoing flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
+                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{total_percentage}%"
             )
         elif label in target_totals:  # Target node with incoming flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
+                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{total_percentage}%"
             )
         else:  # Standalone node
-            sankey_labels.append(f"{label}<br>{percentages[all_labels.index(label)]}")
+            sankey_labels.append(label)
 
     # Generate the Sankey diagram
     fig = go.Figure(data=[go.Sankey(
@@ -173,8 +178,6 @@ if not data.empty and not settings_table.empty:
         width=figure_width,
         height=figure_height,
         margin=dict(l=50, r=50, t=100, b=50),
-        xaxis=dict(showgrid=False, zeroline=False),  # Hide grid lines on x-axis
-        yaxis=dict(showgrid=False, zeroline=False),  # Hide grid lines on y-axis
     )
 
     # Display the Sankey diagram

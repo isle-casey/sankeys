@@ -2,16 +2,19 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Set the page layout to wide
+st.set_page_config(layout="wide")
+
 # Custom colors
 custom_colors = {
     "Lime": "#BEC800",
     "Teal": "#009696",
     "Orange": "#F09600",
     "Lilac": "#5A5096",
-    "Teal_Transparent": "rgba(0, 150, 150, 0.6)",
-    "Lime_Transparent": "rgba(190, 200, 0, 0.6)",
-    "Orange_Transparent": "rgba(240, 150, 0, 0.6)",
-    "Lilac_Transparent": "rgba(90, 80, 150, 0.6)",
+    "Teal_Transparent": "rgba(0, 150, 150, 0.3)",
+    "Lime_Transparent": "rgba(190, 200, 0, 0.3)",
+    "Orange_Transparent": "rgba(240, 150, 0, 0.3)",
+    "Lilac_Transparent": "rgba(90, 80, 150, 0.3)",
 }
 
 # Default data for the Sankey table

@@ -130,23 +130,23 @@ if not data.empty and not settings_table.empty:
     # Generate Sankey labels with totals, percentages, and units
     sankey_labels = []
     for label in all_labels:
-        total_percentage = target_percentages.get(label, 0) + source_percentages.get(label, 0)
+        outgoing_percentage = source_percentages.get(label, 0)
+        incoming_percentage = target_percentages.get(label, 0)
+
+        # Select the larger of incoming or outgoing percentage
+        max_percentage = max(outgoing_percentage, incoming_percentage)
+
         if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
-            if source_totals[label] == target_totals[label]:  # If "in" and "out" are equal, show only one
-                sankey_labels.append(
-                    f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{total_percentage}%"
-                )
-            else:
-                sankey_labels.append(
-                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}<br>{total_percentage}%"
-                )
+            sankey_labels.append(
+                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{max_percentage}%"
+            )
         elif label in source_totals:  # Source node with outgoing flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{total_percentage}%"
+                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{outgoing_percentage}%"
             )
         elif label in target_totals:  # Target node with incoming flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{total_percentage}%"
+                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{incoming_percentage}%"
             )
         else:  # Standalone node
             sankey_labels.append(label)

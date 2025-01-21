@@ -20,6 +20,7 @@ default_data = {
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
     "Unit": ["m3/y"] * 8,  # Default units for values
+    "Percentage": ["10%"] * 8,  # Default percentage for values
     "Target Node Color": [
         "Teal", "Lime", "Orange", "Lilac", "Lime", "Teal", "Lilac", "Orange"
     ],
@@ -77,6 +78,7 @@ if not data.empty and not settings_table.empty:
     targets = data["Target"].astype(str).tolist()
     values = data["Value"].astype(int).tolist()
     units = data["Unit"].astype(str).tolist()
+    percentages = data["Percentage"].astype(str).tolist()
     target_colors = data["Target Node Color"].astype(str).tolist()
     link_colors = [custom_colors[color] for color in data["Link Color"].astype(str).tolist()]
 
@@ -127,22 +129,22 @@ if not data.empty and not settings_table.empty:
         if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
             if source_totals[label] == target_totals[label]:  # If "in" and "out" are equal, show only one
                 sankey_labels.append(
-                    f"{label}<br>{format_value(source_totals[label])} {units[0]}"
+                    f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
                 )
             else:
                 sankey_labels.append(
-                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}"
+                    f"{label}<br>Out: {format_value(source_totals[label])} {units[0]}<br>In: {format_value(target_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
                 )
         elif label in source_totals:  # Source node with outgoing flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(source_totals[label])} {units[0]}"
+                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
             )
         elif label in target_totals:  # Target node with incoming flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(target_totals[label])} {units[0]}"
+                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{percentages[all_labels.index(label)]}"
             )
         else:  # Standalone node
-            sankey_labels.append(label)
+            sankey_labels.append(f"{label}<br>{percentages[all_labels.index(label)]}")
 
     # Generate the Sankey diagram
     fig = go.Figure(data=[go.Sankey(

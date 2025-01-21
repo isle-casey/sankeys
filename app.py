@@ -66,13 +66,27 @@ data = st.data_editor(
 )
 
 # Create or edit the formatting settings table
-settings_table = st.data_editor(
-    pd.DataFrame(default_settings),
-    use_container_width=True,
-    num_rows="dynamic",
-    disabled=False,
-    key="settings_table"
-)
+with st.container():
+    st.markdown(
+        """
+        <style>
+        .settings-table-container {
+            width: 1000px !important;
+            margin: 0 auto;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown('<div class="settings-table-container">', unsafe_allow_html=True)
+    settings_table = st.data_editor(
+        pd.DataFrame(default_settings),
+        use_container_width=False,
+        num_rows="dynamic",
+        disabled=False,
+        key="settings_table"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Ensure both tables are valid
 if not data.empty and not settings_table.empty:

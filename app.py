@@ -66,6 +66,15 @@ data = st.data_editor(
     key="sankey_table"
 )
 
+# Replace empty or "none" values in "Unit" column with "m3/y"
+data["Unit"] = data["Unit"].apply(lambda x: "m3/y" if pd.isna(x) or str(x).strip().lower() == "none" else x)
+
+# Replace empty or "none" values in "Target Node Color" column with "Teal"
+data["Target Node Color"] = data["Target Node Color"].apply(lambda x: "Teal" if pd.isna(x) or str(x).strip().lower() == "none" else x)
+
+# Replace empty or "none" values in "Link Color" column with "Teal_Transparent"
+data["Link Color"] = data["Link Color"].apply(lambda x: "Teal_Transparent" if pd.isna(x) or str(x).strip().lower() == "none" else x)
+
 # Create or edit the formatting settings table
 settings_table = st.data_editor(
     pd.DataFrame(default_settings),
@@ -107,7 +116,7 @@ if not data.empty and not settings_table.empty:
     link_colors = [
         custom_colors[color].replace("0.3", f"{transparency}")  # Replace the hardcoded transparency
         if "rgba" in custom_colors[color]
-        else custom_colors[color]
+        else custom_colors[color]  # Keep solid colors unchanged
         for color in data["Link Color"].astype(str).tolist()
     ]
 
@@ -204,4 +213,4 @@ if not data.empty and not settings_table.empty:
             mime="image/svg+xml",
         )
 else:
-    st.warning("Please fill out both tables to generate the Sankey diagram.")
+    st.warning("Please fill out both tables to

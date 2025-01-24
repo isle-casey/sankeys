@@ -53,7 +53,7 @@ default_settings = {
 }
 
 # App title
-st.title("Interactive Sankey Diagram Creator with Aggregated Node Totals")
+st.title("Interactive Sankey Diagram Creator")
 
 # Instructions
 st.write("Edit the tables below to customize the Sankey diagram and its formatting.")

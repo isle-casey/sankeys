@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import io
-import plotly.io as pio
 
 # Set the page layout to wide
 st.set_page_config(layout="wide")
@@ -24,8 +23,8 @@ default_data = {
     "Source": ["A", "B", "A", "C", "D", "E", "F", "G"],
     "Target": ["B", "C", "D", "E", "F", "G", "H", "A"],
     "Value": [10, 15, 20, 25, 30, 35, 40, 45],
-    "Percentage": [10] * 8,  # Default percentage values as raw numbers
-    "Unit": ["m3/y"] * 8,  # Default units for values
+    "Percentage": [10] * 8,
+    "Unit": ["m3/y"] * 8,
     "Target Node Color": [
         "Teal", "Lime", "Orange", "Lilac", "Lime", "Teal", "Lilac", "Orange"
     ],
@@ -68,27 +67,13 @@ data = st.data_editor(
 )
 
 # Create or edit the formatting settings table
-with st.container():
-    st.markdown(
-        """
-        <style>
-        .settings-table-container {
-            width: 1000px !important;
-            margin: 0 auto;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.markdown('<div class="settings-table-container">', unsafe_allow_html=True)
-    settings_table = st.data_editor(
-        pd.DataFrame(default_settings),
-        use_container_width=False,
-        num_rows="dynamic",
-        disabled=False,
-        key="settings_table"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+settings_table = st.data_editor(
+    pd.DataFrame(default_settings),
+    use_container_width=False,
+    num_rows="dynamic",
+    disabled=False,
+    key="settings_table"
+)
 
 # Ensure both tables are valid
 if not data.empty and not settings_table.empty:
@@ -122,7 +107,7 @@ if not data.empty and not settings_table.empty:
     link_colors = [
         custom_colors[color].replace("0.3", f"{transparency}")  # Replace the hardcoded transparency
         if "rgba" in custom_colors[color]
-        else custom_colors[color]  # Keep solid colors unchanged
+        else custom_colors[color]
         for color in data["Link Color"].astype(str).tolist()
     ]
 
@@ -164,18 +149,18 @@ if not data.empty and not settings_table.empty:
 
         if label in source_totals and label in target_totals:  # Node with both outgoing and incoming flows
             sankey_labels.append(
-                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{max_percentage}%"
+                f"<b>{label}</b><br>{format_value(source_totals[label])} {units[0]}<br>{max_percentage}%"
             )
         elif label in source_totals:  # Source node with outgoing flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(source_totals[label])} {units[0]}<br>{outgoing_percentage}%"
+                f"<b>{label}</b><br>{format_value(source_totals[label])} {units[0]}<br>{outgoing_percentage}%"
             )
         elif label in target_totals:  # Target node with incoming flow total
             sankey_labels.append(
-                f"{label}<br>{format_value(target_totals[label])} {units[0]}<br>{incoming_percentage}%"
+                f"<b>{label}</b><br>{format_value(target_totals[label])} {units[0]}<br>{incoming_percentage}%"
             )
         else:  # Standalone node
-            sankey_labels.append(label)
+            sankey_labels.append(f"<b>{label}</b>")
 
     # Generate the Sankey diagram
     fig = go.Figure(data=[go.Sankey(
@@ -196,11 +181,11 @@ if not data.empty and not settings_table.empty:
 
     # Set the default template to "plotly_white"
     fig.update_layout(
-        template="plotly_white",  # Apply the plotly_white template
+        template="plotly_white",
         plot_bgcolor='white',
         paper_bgcolor='white',
         title_text="Sankey Diagram",
-        font=dict(family=font_family, size=font_size, color="black"),  # Set font for title and labels
+        font=dict(family=font_family, size=font_size, color="black"),
         width=figure_width,
         height=figure_height,
         margin=dict(l=50, r=50, t=100, b=50),
@@ -209,19 +194,14 @@ if not data.empty and not settings_table.empty:
     # Display the Sankey diagram
     st.plotly_chart(fig)
 
-    # Export Sankey as SVG
-    def export_sankey_diagram_svg():
-        buffer = io.BytesIO()
-        pio.write_image(fig, buffer, format="svg", engine="kaleido")
-        buffer.seek(0)
-        return buffer
-
-    # Add a download button for SVG
-    st.download_button(
-        label="Download Sankey Diagram as SVG",
-        data=export_sankey_diagram_svg(),
-        file_name="sankey_diagram.svg",
-        mime="image/svg+xml"
-    )
+    # Download functionality
+    with io.BytesIO() as buffer:
+        fig.write_image(buffer, format="svg")
+        st.download_button(
+            label="Download Sankey Diagram as SVG",
+            data=buffer,
+            file_name="sankey_diagram.svg",
+            mime="image/svg+xml",
+        )
 else:
     st.warning("Please fill out both tables to generate the Sankey diagram.")

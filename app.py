@@ -213,4 +213,4 @@ if not data.empty and not settings_table.empty:
             mime="image/svg+xml",
         )
 else:
-    st.warning("Please fill out both tables to
+    st.warning("Please fill out both tables to generate the Sankey diagram.")

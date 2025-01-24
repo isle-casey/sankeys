@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import io
+import plotly.io as pio
 
 # Set the page layout to wide
 st.set_page_config(layout="wide")
@@ -206,5 +208,20 @@ if not data.empty and not settings_table.empty:
 
     # Display the Sankey diagram
     st.plotly_chart(fig)
+
+    # Export Sankey as SVG
+    def export_sankey_diagram_svg():
+        buffer = io.BytesIO()
+        pio.write_image(fig, buffer, format="svg", engine="kaleido")
+        buffer.seek(0)
+        return buffer
+
+    # Add a download button for SVG
+    st.download_button(
+        label="Download Sankey Diagram as SVG",
+        data=export_sankey_diagram_svg(),
+        file_name="sankey_diagram.svg",
+        mime="image/svg+xml"
+    )
 else:
     st.warning("Please fill out both tables to generate the Sankey diagram.")

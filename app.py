@@ -143,7 +143,7 @@ if not data.empty and not settings_table.empty:
 
     # Assign colors to nodes
     node_colors = [
-        node_color_map.get(node, "gray")  # Default source node color is gray
+        node_color_map.get(node, "Teal")  # Default source node color is Teal
         for node in all_labels
     ]
 
